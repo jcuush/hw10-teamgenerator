@@ -140,7 +140,7 @@ function init() {
     inquirer
     .prompt(questions)
     .then(function(data) {
-        if (managerPresent === true) {
+        if (managerPresent === true && data.role === "Manager") {
             console.log("Only one manager is allowed")
             newMember();
         }
