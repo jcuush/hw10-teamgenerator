@@ -9,39 +9,120 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+const Employee = require("./lib/Employee");
+const { create } = require("domain");
 
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
-getEmployee() {
-    inquirer.prompt([
-        {
-            type: "input",
-            message: "What is your name?",
-            name: "name"
-        },
-        {
-            type: "input",
-            message: "What is your employee ID?",
-            name: "id"
-        },
-        {
-            type: "input",
-            message: "What is your email?",
-            name: "email"
-        },
-        {
-            type: "list",
-            message:"What is your role?",
-            choices: [
-                "Employee",
-                "Manager",
-                "Engineer",
-                "Intern"
-            ]
-        },
+let team = [];
+// this function is ran after the initial inquirer to decide if additional questions need to be asked through the inquirer based on the employees role
+const questions = [
+    {
+        type: "input",
+        message: "What is your name?",
+        name: "name"
+    },
+    {
+        type: "input",
+        message: "What is your employee ID?",
+        name: "id"
+    },
+    {
+        type: "input",
+        message: "What is your email?",
+        name: "email"
+    },
+    {
+        type: "list",
+        message:"What is your role?",
+        choices: [
+            "Employee",
+            "Manager",
+            "Engineer",
+            "Intern"
+        ],
+        name: "role"
+    },
+]
+
+const employeeInfo = (role) => {
+    if(role === "Manager") {
+    inquirer
+    .prompt([
+    {
+        type: "input",
+        message: "What is your office number?",
+        name: "officeNumber"
+    }
     ])
 }
+    else if(role === "Engineer"){
+        inquirer
+        .prompt([
+        {
+        type: "input",
+        message: "What is your github username?",
+        name: "github"
+        }
+
+    ])
+    }
+    else if(role === "Intern"){
+        inquirer
+        .prompt([
+        {
+        type: "input",
+        message: "Where did you go to school?",
+        name: "school"
+        }
+    ]).then(function(roleData) {
+        console.log(roleData);
+    //     createEmployee(data.role)
+    //     console.log(newEmployee);
+    })
+    }
+}
+
+
+
+const createEmployee = (data, roleData) => {
+    if(role === "Employee") {
+        var newEmployee = new Employee(data.name, data.id, data.email)
+        team.push(newEmployee);
+    }
+    else if(role === "Manager") {
+        var newEmployee = new Manager(data.name, data.id, data.email, roleData)
+        team.push(newEmployee);
+    }
+    else if(role === "Engineer") {
+        var newEmployee = new Engineer(data.name, data.id, data.email, roleData)
+        team.push(newEmployee);
+    }
+    else if(role === "Intern") {
+        var newEmployee = new Intern(data.name, data.id, data.email, roleData)
+        team.push(newEmployee);
+    
+        
+    }
+    
+    
+
+}
+
+function init() {
+    inquirer
+    .prompt(questions)
+    .then(function(data) {
+        employeeInfo(data.role);
+        createEmployee(data, roleData);
+    })
+console.log(newEmployee);
+}
+
+// function renderHTML () {
+
+// }
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
@@ -61,3 +142,4 @@ getEmployee() {
 // for further information. Be sure to test out each class and verify it generates an
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
+init();
