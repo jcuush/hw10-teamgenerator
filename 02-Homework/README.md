@@ -2,6 +2,10 @@
 
 This project is designed for the user to answer prompts to give information about team members and then create an html page with the information of each team member.  This project allows for only a single manager to be added to each team and any number of engineers/interns to be added.  The html page allows for quick access of each team member's name, id, and email.  Additionally for the manager, engineer and intern role it gives information about the office number, github profile and school respectively.
 
+## Usage
+
+Run project by installing npm packages in terminal.
+
 
 ## Functions
 
