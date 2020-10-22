@@ -20,22 +20,22 @@ let team = [];
 const questions = [
     {
         type: "input",
-        message: "What is your name?",
+        message: "What is the team member's name?",
         name: "name"
     },
     {
         type: "input",
-        message: "What is your employee ID?",
+        message: "What is the team member's employee ID?",
         name: "id"
     },
     {
         type: "input",
-        message: "What is your email?",
+        message: "What is the team member's email?",
         name: "email"
     },
     {
         type: "list",
-        message:"What is your role?",
+        message:"What is the team member's role?",
         choices: [
             "Employee",
             "Manager",
@@ -46,65 +46,93 @@ const questions = [
     },
 ]
 
-const employeeInfo = (role) => {
-    if(role === "Manager") {
+const newMember = () => {
+    inquirer
+    .prompt([
+        {
+            type: "confirm",
+            message: "Are there more team members?",
+            name: "newMember"
+        }
+    ]).then(function(teamData) {
+        if(teamData.newMember === true) {
+            init();
+        }
+        else{ 
+            console.log(team);
+        }
+
+    })
+     
+}
+
+const employeeInfo = (data) => {
+    if(data.role === "Manager") {
     inquirer
     .prompt([
     {
         type: "input",
-        message: "What is your office number?",
+        message: "What is the team manager's office number?",
         name: "officeNumber"
     }
-    ])
+    ]).then(function(roleData) {
+        createEmployee(data, roleData);
+    })
 }
-    else if(role === "Engineer"){
+    else if(data.role === "Engineer"){
         inquirer
         .prompt([
         {
         type: "input",
-        message: "What is your github username?",
+        message: "What is the team engineer's github username?",
         name: "github"
         }
 
-    ])
+    ]).then(function(roleData) {
+        createEmployee(data, roleData);
+    })
     }
-    else if(role === "Intern"){
+    else if(data.role === "Intern"){
         inquirer
         .prompt([
         {
         type: "input",
-        message: "Where did you go to school?",
+        message: "Where does the intern go to school?",
         name: "school"
         }
     ]).then(function(roleData) {
-        console.log(roleData);
-    //     createEmployee(data.role)
-    //     console.log(newEmployee);
+        createEmployee(data, roleData);
     })
+    }
+    else if (data.role === "Employee"){
+        createEmployee(data);
     }
 }
 
 
 
 const createEmployee = (data, roleData) => {
-    if(role === "Employee") {
+    if(data.role === "Employee") {
         var newEmployee = new Employee(data.name, data.id, data.email)
         team.push(newEmployee);
+        newMember();
     }
-    else if(role === "Manager") {
-        var newEmployee = new Manager(data.name, data.id, data.email, roleData)
+    else if(data.role === "Manager") {
+        var newEmployee = new Manager(data.name, data.id, data.email, roleData.officeNumber)
         team.push(newEmployee);
+        newMember();
     }
-    else if(role === "Engineer") {
-        var newEmployee = new Engineer(data.name, data.id, data.email, roleData)
+    else if(data.role === "Engineer") {
+        var newEmployee = new Engineer(data.name, data.id, data.email, roleData.github)
         team.push(newEmployee);
+        newMember();
     }
-    else if(role === "Intern") {
-        var newEmployee = new Intern(data.name, data.id, data.email, roleData)
+    else if(data.role === "Intern") {
+        var newEmployee = new Intern(data.name, data.id, data.email, roleData.school)
         team.push(newEmployee);
+        newMember();
+    }
     
-        
-    }
     
     
 
@@ -114,10 +142,9 @@ function init() {
     inquirer
     .prompt(questions)
     .then(function(data) {
-        employeeInfo(data.role);
-        createEmployee(data, roleData);
+        employeeInfo(data);
     })
-console.log(newEmployee);
+
 }
 
 // function renderHTML () {
@@ -143,3 +170,5 @@ console.log(newEmployee);
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
 init();
+
+
