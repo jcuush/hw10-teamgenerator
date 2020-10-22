@@ -15,8 +15,14 @@ const { create } = require("domain");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+
+// team is an empty array as members that members will be pushed into after prompts are answerd
 let team = [];
-// this function is ran after the initial inquirer to decide if additional questions need to be asked through the inquirer based on the employees role
+// managerpresent value is set to false and will change to true as soon as a manager team member is selected
+
+let managerPresent = false;
+
+// questions to be asked on initial prompt that apply to all employees
 const questions = [
     {
         type: "input",
@@ -37,7 +43,6 @@ const questions = [
         type: "list",
         message:"What is the team member's role?",
         choices: [
-            "Employee",
             "Manager",
             "Engineer",
             "Intern"
@@ -45,7 +50,7 @@ const questions = [
         name: "role"
     },
 ]
-
+// this function will ask the user if they wish to add more members to their team following the prompts, if yes is selected the prompt is ran again, if no an html file for the team is created
 const newMember = () => {
     inquirer
     .prompt([
@@ -59,15 +64,16 @@ const newMember = () => {
             init();
         }
         else{ 
-            console.log(team);
+            renderHTML();
         }
 
     })
      
 }
-
+// this function takes in data from initial inquirer and will prompt an additional question respective to the role selected and calls creates the create employee function at the end
 const employeeInfo = (data) => {
     if(data.role === "Manager") {
+        managerPresent = true;
     inquirer
     .prompt([
     {
@@ -104,20 +110,12 @@ const employeeInfo = (data) => {
         createEmployee(data, roleData);
     })
     }
-    else if (data.role === "Employee"){
-        createEmployee(data);
-    }
 }
 
 
-
+// this function takes in data from the initial prompt and the prompt relative to the role and based on the role uses the respective classes to add a new employee, calls newMember function at end to ask user if they want to add more members
 const createEmployee = (data, roleData) => {
-    if(data.role === "Employee") {
-        var newEmployee = new Employee(data.name, data.id, data.email)
-        team.push(newEmployee);
-        newMember();
-    }
-    else if(data.role === "Manager") {
+    if(data.role === "Manager") {
         var newEmployee = new Manager(data.name, data.id, data.email, roleData.officeNumber)
         team.push(newEmployee);
         newMember();
@@ -137,17 +135,30 @@ const createEmployee = (data, roleData) => {
     
 
 }
-
+// function init prompts the questions array and then based off of the data.role value will prompt the question designated for each role.  The if statement is there so only one manager can be added to the team.  If a user tries to add more than one manager it will not be allowed and then the user will be prompted if they still want to add more members or not once again.
 function init() {
     inquirer
     .prompt(questions)
     .then(function(data) {
+        if (managerPresent === true) {
+            console.log("Only one manager is allowed")
+            newMember();
+        }
+        else {
         employeeInfo(data);
+    }
     })
-
 }
-
-// function renderHTML () {
+// creates the html file where the team member information is displayed.
+function renderHTML () {
+    var html = render(team)
+    fs.writeFile(outputPath, html, function(error) {
+        if(error) {
+            return console.log(error);
+        }
+        console.log("New team member file created!");
+        })
+}
 
 // }
 // After the user has input all employees desired, call the `render` function (required
